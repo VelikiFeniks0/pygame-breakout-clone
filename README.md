@@ -8,9 +8,11 @@ Controls:
 
 
 Extra:
-    
+ 
+   
     PS4 Controller (Dualshock 4 for PlayStation4)
     Controls:
+            
             
             left directional button: move left
             right directional button: move right
