@@ -2,6 +2,7 @@
 Breakout clone made with Python and Pygame library
 
 Controls:
+    
     left arrow - move left
     right arrow - move right
 
