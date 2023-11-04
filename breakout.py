@@ -6,10 +6,11 @@ pygame.init()
 
 
 # initialize joystick / controller
-
+joy = False
 try:
     j = pygame.joystick.Joystick(0)
     j.init()
+    joy = True
 except:
     pass
 
@@ -23,6 +24,8 @@ ballbrick = False
 ballplayer = False
 
 lives = 5
+
+win = False
 
 score_var = 0
 
@@ -83,7 +86,7 @@ class Ball(pygame.sprite.Sprite):
 
     
     def move(self):
-        global ballbrick, score_var, score, font, lives, ballplayer
+        global ballbrick, score_var, score, font, lives, ballplayer, win, brick_layers
         self.rect.x += self.ball_x_speed
         self.rect.y += self.ball_y_speed
 
@@ -117,6 +120,21 @@ class Ball(pygame.sprite.Sprite):
             self.ball_x_speed = 4.50
             self.ball_y_speed = 4.50
 
+        if win:
+            self.ball_x_speed = 0
+            self.ball_y_speed = 0
+            self.rect.center = ((width/2), (height/2)+200)
+            self.rect.x = self.player.rect.x
+            self.ball_x_speed = 4.50
+            self.ball_y_speed = 4.50
+            brick_layers = {
+                "red": [(90, 50), (220, 50), (350, 50), (480, 50), (610, 50)],
+                "orange": [(90, 90), (220, 90), (350, 90), (480, 90), (610, 90)],
+                "green": [(90, 130), (220, 130), (350, 130), (480, 130), (610, 130)],
+                "yellow": [(90, 170), (220, 170), (350, 170), (480, 170), (610, 170)],
+                "blue": [(90, 210), (220, 210), (350, 210), (480, 210), (610, 210)]
+            }
+            win = False
 
         if self.rect.x <= 0 or self.rect.right >= width:
             self.ball_x_speed *= -1
@@ -161,7 +179,7 @@ class Player(pygame.sprite.Sprite):
             
 
     def boundaries(self):
-        global ballplayer
+        global ballplayer, win
         if self.rect.x <= 0:
             self.rect.x = 0
         
@@ -172,6 +190,8 @@ class Player(pygame.sprite.Sprite):
             self.rect.center = (width/2, (height/2)+240)
             ballplayer = False
         
+        if win:
+            self.rect.center = (width/2, (height/2)+240)        
 
     def update(self):
         self.user_input()
@@ -274,7 +294,7 @@ def update_player():
 
 
 def reset_game():
-    global ballbrick, ballplayer, lives, score_var, game_over, score, brick_layers
+    global ballbrick, ballplayer, lives, score_var, game_over, score, brick_layers, win
     ballbrick = False
     ballplayer = True
     ballplayer = False
@@ -315,13 +335,23 @@ while run:
     elif score_var >= 25:
         you_won_text = font1.render('You won!', True, (255,255,255))
         dis.blit(you_won_text, (240, 240))
-        if j.get_button(6) or key[pygame.K_ESCAPE]:
-            reset_game()
+        if joy:
+            if j.get_button(6) or key[pygame.K_ESCAPE]:
+                win = True
+                reset_game()
+        else:
+            if key[pygame.K_ESCAPE]:
+                win = True
+                reset_game()
     else:
         game_over_text = font1.render('Game Over', True, (255,255,255))
         dis.blit(game_over_text, (240, 240))
-        if j.get_button(6) or key[pygame.K_ESCAPE]:
-            reset_game()
+        if joy:
+            if j.get_button(6) or key[pygame.K_ESCAPE]:
+                reset_game()
+        else:
+            if key[pygame.K_ESCAPE]:
+                reset_game()
     pygame.display.flip()
     clock.tick(60)
     
